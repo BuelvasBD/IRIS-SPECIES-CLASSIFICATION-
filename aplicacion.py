@@ -17,7 +17,7 @@ from streamlit_option_menu import option_menu
 # ------------------------------------------------
 st.set_page_config(
     page_title="Iris Classification",
-    page_icon="🌸",
+    page_icon="",
     layout="wide"
 )
 
@@ -93,7 +93,7 @@ f1 = f1_score(y_test, y_pred, average="weighted")
 # TITLE
 # ------------------------------------------------
 st.markdown(
-    "<h1 style='text-align:center;'>🌸 Iris Species Classification</h1>",
+    "<h1 style='text-align:center;'> Iris Species Classification</h1>",
     unsafe_allow_html=True
 )
 
@@ -144,7 +144,7 @@ if selected == "Dashboard":
 
     st.divider()
 
-    st.subheader("🌸 Species Distribution")
+    st.subheader(" Species Distribution")
 
     species_count = df["species_name"].value_counts().reset_index()
     species_count.columns = ["Species", "Count"]
@@ -163,7 +163,7 @@ if selected == "Dashboard":
 # ------------------------------------------------
 elif selected == "Prediction":
 
-    st.subheader("🤖 Predict Flower Species")
+    st.subheader(" Predict Flower Species")
 
     col1, col2 = st.columns(2)
 
@@ -209,9 +209,9 @@ elif selected == "Prediction":
     prediction = model.predict(input_data)[0]
 
     species_names = {
-        0: "🌱 Setosa",
-        1: "🌿 Versicolor",
-        2: "🌸 Virginica"
+        0: " Setosa",
+        1: " Versicolor",
+        2: "Virginica"
     }
 
     st.success(f"Predicted Species: {species_names[prediction]}")
@@ -275,7 +275,7 @@ elif selected == "Scatter Matrix":
 # ------------------------------------------------
 elif selected == "Feature Importance":
 
-    st.subheader("⭐ Feature Importance")
+    st.subheader(" Feature Importance")
 
     importance_df = pd.DataFrame({
         "Feature": iris.feature_names,
