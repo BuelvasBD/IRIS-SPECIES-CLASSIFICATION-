@@ -14,18 +14,14 @@ from sklearn.metrics import (
 import plotly.express as px
 from streamlit_option_menu import option_menu
 
-# ------------------------------------------------
-# PAGE CONFIG
-# ------------------------------------------------
+
 
 st.set_page_config(
     page_title="Iris Dashboard",
     layout="wide"
 )
 
-# ------------------------------------------------
-# DARK THEME CSS
-# ------------------------------------------------
+
 
 st.markdown("""
 <style>
@@ -242,9 +238,7 @@ hr {
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------------------------------------
-# HEADER
-# ------------------------------------------------
+
 
 st.markdown("""
 <div class="main-title">
@@ -256,17 +250,15 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# ------------------------------------------------
-# LOAD DATASET
-# ------------------------------------------------
+
 
 df = pd.read_csv("Iris.csv")
 
-# Eliminar columna Id si existe
+
 if "Id" in df.columns:
     df = df.drop("Id", axis=1)
 
-# Renombrar columnas
+
 df.columns = [
     "sepal length (cm)",
     "sepal width (cm)",
@@ -275,7 +267,7 @@ df.columns = [
     "species_name"
 ]
 
-# Convertir especies a valores numéricos
+
 species_mapping = {
     "Iris-setosa": 0,
     "Iris-versicolor": 1,
@@ -284,9 +276,6 @@ species_mapping = {
 
 df["species"] = df["species_name"].map(species_mapping)
 
-# ------------------------------------------------
-# FEATURES
-# ------------------------------------------------
 
 feature_columns = [
     "sepal length (cm)",
@@ -295,9 +284,7 @@ feature_columns = [
     "petal width (cm)"
 ]
 
-# ------------------------------------------------
-# MODEL
-# ------------------------------------------------
+
 
 X = df[feature_columns]
 y = df["species"]
@@ -323,9 +310,7 @@ precision = precision_score(y_test, y_pred, average="weighted")
 recall = recall_score(y_test, y_pred, average="weighted")
 f1 = f1_score(y_test, y_pred, average="weighted")
 
-# ------------------------------------------------
-# MENU
-# ------------------------------------------------
+
 
 selected = option_menu(
     menu_title=None,
@@ -358,9 +343,6 @@ selected = option_menu(
 
 st.divider()
 
-# ------------------------------------------------
-# DASHBOARD
-# ------------------------------------------------
 
 if selected == "Dashboard":
 
@@ -421,10 +403,6 @@ if selected == "Dashboard":
 
         st.plotly_chart(fig_box, use_container_width=True)
 
-# ------------------------------------------------
-# PREDICTION
-# ------------------------------------------------
-
 elif selected == "Prediction":
 
     st.subheader("Prediction")
@@ -482,9 +460,6 @@ elif selected == "Prediction":
         f"Predicted Species: {species_names[prediction]}"
     )
 
-# ------------------------------------------------
-# 3D PLOT
-# ------------------------------------------------
 
 elif selected == "3D Plot":
 
@@ -510,9 +485,6 @@ elif selected == "3D Plot":
 
     st.plotly_chart(fig_3d, use_container_width=True)
 
-# ------------------------------------------------
-# HISTOGRAMS
-# ------------------------------------------------
 
 elif selected == "Histograms":
 
@@ -542,9 +514,6 @@ elif selected == "Histograms":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# ------------------------------------------------
-# FEATURE IMPORTANCE
-# ------------------------------------------------
 
 elif selected == "Feature Importance":
 
@@ -575,9 +544,7 @@ elif selected == "Feature Importance":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# ------------------------------------------------
-# DATASET
-# ------------------------------------------------
+
 
 elif selected == "Dataset":
 
@@ -585,9 +552,7 @@ elif selected == "Dataset":
 
     st.dataframe(df, use_container_width=True)
 
-# ------------------------------------------------
-# FOOTER
-# ------------------------------------------------
+
 
 st.divider()
 
