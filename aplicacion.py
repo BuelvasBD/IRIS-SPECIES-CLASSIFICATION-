@@ -2,70 +2,304 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 
-from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score
+)
 
 import plotly.express as px
-import plotly.graph_objects as go
-
 from streamlit_option_menu import option_menu
 
 # ------------------------------------------------
 # PAGE CONFIG
 # ------------------------------------------------
+
 st.set_page_config(
-    page_title="Iris Classification",
-    page_icon="",
+    page_title="Iris Dashboard",
     layout="wide"
 )
 
 # ------------------------------------------------
-# CUSTOM CSS
+# DARK THEME CSS
 # ------------------------------------------------
+
 st.markdown("""
 <style>
 
-.main {
-    background-color: #0E1117;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif;
+    color: white !important;
 }
 
-.block-container {
-    padding-top: 1rem;
+/* ------------------------------------------------ */
+/* BACKGROUND */
+/* ------------------------------------------------ */
+
+.stApp {
+    background-color: #0F1117;
 }
+
+/* ------------------------------------------------ */
+/* MAIN CONTAINER */
+/* ------------------------------------------------ */
+
+.main .block-container {
+    padding-top: 1rem;
+    max-width: 1400px;
+}
+
+/* ------------------------------------------------ */
+/* STREAMLIT HEADER */
+/* ------------------------------------------------ */
+
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+/* ------------------------------------------------ */
+/* TITLES */
+/* ------------------------------------------------ */
+
+.main-title {
+    font-size: 42px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.sub-title {
+    color: #B8BCC8;
+    margin-bottom: 25px;
+}
+
+/* ------------------------------------------------ */
+/* NAVIGATION */
+/* ------------------------------------------------ */
+
+.nav-link {
+    border-radius: 10px !important;
+    transition: 0.2s !important;
+    color: #D1D5DB !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+.nav-link:hover {
+    background-color: #1E293B !important;
+}
+
+.nav-link-selected {
+    background-color: #6366F1 !important;
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* METRICS */
+/* ------------------------------------------------ */
 
 div[data-testid="stMetric"] {
-    background-color: #1c1f26;
-    border: 1px solid #2d333b;
-    padding: 15px;
-    border-radius: 15px;
+
+    background: #1A1D29;
+
+    border-radius: 14px;
+
+    padding: 18px;
+
+    border: 1px solid #2A2F3D;
+}
+
+/* Metric labels */
+
+div[data-testid="stMetricLabel"] {
+    color: #B8BCC8 !important;
+}
+
+/* Metric values */
+
+div[data-testid="stMetricValue"] {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* CHARTS */
+/* ------------------------------------------------ */
+
+.js-plotly-plot {
+
+    background: #1A1D29;
+
+    border-radius: 14px;
+
+    padding: 10px;
+
+    border: 1px solid #2A2F3D;
+}
+
+/* ------------------------------------------------ */
+/* DATAFRAME DARK MODE */
+/* ------------------------------------------------ */
+
+[data-testid="stDataFrame"] {
+
+    background-color: #1A1D29 !important;
+
+    border: 1px solid #2A2F3D !important;
+
+    border-radius: 14px !important;
+
+    overflow: hidden !important;
+}
+
+[data-testid="stDataFrame"] div {
+    color: white !important;
+}
+
+[data-testid="stDataFrame"] thead tr th {
+
+    background-color: #111827 !important;
+
+    color: white !important;
+
+    border-color: #2A2F3D !important;
+
+    font-weight: 600 !important;
+}
+
+[data-testid="stDataFrame"] tbody tr td {
+
+    background-color: #1A1D29 !important;
+
+    color: white !important;
+
+    border-color: #2A2F3D !important;
+}
+
+[data-testid="stDataFrame"] tbody tr:nth-child(even) td {
+    background-color: #161925 !important;
+}
+
+[data-testid="stDataFrame"] tbody tr:hover td {
+    background-color: #232838 !important;
+}
+
+[data-testid="stDataFrame"] tbody th {
+
+    background-color: #111827 !important;
+
+    color: white !important;
+
+    border-color: #2A2F3D !important;
+}
+
+/* ------------------------------------------------ */
+/* SECTION TITLES */
+/* ------------------------------------------------ */
+
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SLIDERS */
+/* ------------------------------------------------ */
+
+.stSlider label {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SELECTBOX */
+/* ------------------------------------------------ */
+
+.stSelectbox label {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SUCCESS BOX */
+/* ------------------------------------------------ */
+
+.stSuccess {
+    background-color: #1E293B !important;
+    color: white !important;
+    border: 1px solid #374151 !important;
+}
+
+/* ------------------------------------------------ */
+/* DIVIDER */
+/* ------------------------------------------------ */
+
+hr {
+    border-color: #2A2F3D;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------
-# LOAD DATA
+# HEADER
 # ------------------------------------------------
-iris = load_iris()
 
-df = pd.DataFrame(
-    iris.data,
-    columns=iris.feature_names
-)
+st.markdown("""
+<div class="main-title">
+    Iris Species Dashboard
+</div>
 
-df["species"] = iris.target
-df["species_name"] = df["species"].map({
-    0: "Setosa",
-    1: "Versicolor",
-    2: "Virginica"
-})
+<div class="sub-title">
+    Machine Learning Classification using Random Forest
+</div>
+""", unsafe_allow_html=True)
+
+# ------------------------------------------------
+# LOAD DATASET
+# ------------------------------------------------
+
+df = pd.read_csv("Iris.csv")
+
+# Eliminar columna Id si existe
+if "Id" in df.columns:
+    df = df.drop("Id", axis=1)
+
+# Renombrar columnas
+df.columns = [
+    "sepal length (cm)",
+    "sepal width (cm)",
+    "petal length (cm)",
+    "petal width (cm)",
+    "species_name"
+]
+
+# Convertir especies a valores numéricos
+species_mapping = {
+    "Iris-setosa": 0,
+    "Iris-versicolor": 1,
+    "Iris-virginica": 2
+}
+
+df["species"] = df["species_name"].map(species_mapping)
+
+# ------------------------------------------------
+# FEATURES
+# ------------------------------------------------
+
+feature_columns = [
+    "sepal length (cm)",
+    "sepal width (cm)",
+    "petal length (cm)",
+    "petal width (cm)"
+]
 
 # ------------------------------------------------
 # MODEL
 # ------------------------------------------------
-X = df[iris.feature_names]
+
+X = df[feature_columns]
 y = df["species"]
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -90,21 +324,9 @@ recall = recall_score(y_test, y_pred, average="weighted")
 f1 = f1_score(y_test, y_pred, average="weighted")
 
 # ------------------------------------------------
-# TITLE
+# MENU
 # ------------------------------------------------
-st.markdown(
-    "<h1 style='text-align:center;'> Iris Species Classification</h1>",
-    unsafe_allow_html=True
-)
 
-st.markdown(
-    "<p style='text-align:center;color:gray;'>Interactive Machine Learning Dashboard</p>",
-    unsafe_allow_html=True
-)
-
-# ------------------------------------------------
-# TOP NAVIGATION MENU
-# ------------------------------------------------
 selected = option_menu(
     menu_title=None,
     options=[
@@ -112,28 +334,37 @@ selected = option_menu(
         "Prediction",
         "3D Plot",
         "Histograms",
-        "Scatter Matrix",
         "Feature Importance",
         "Dataset"
     ],
-    icons=[
-        "bar-chart",
-        "cpu",
-        "globe",
-        "graph-up",
-        "grid",
-        "star",
-        "table"
-    ],
-    orientation="horizontal"
+    orientation="horizontal",
+    styles={
+        "container": {
+            "padding": "0!important",
+            "background-color": "transparent"
+        },
+        "icon": {
+            "display": "none"
+        },
+        "nav-link": {
+            "text-align": "center",
+            "margin": "0px 6px",
+        },
+        "nav-link-selected": {
+            "background-color": "#6366F1",
+        },
+    }
 )
 
+st.divider()
+
 # ------------------------------------------------
-# DASHBOARD PAGE
+# DASHBOARD
 # ------------------------------------------------
+
 if selected == "Dashboard":
 
-    st.subheader(" Model Metrics")
+    st.subheader("Model Metrics")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -144,26 +375,59 @@ if selected == "Dashboard":
 
     st.divider()
 
-    st.subheader(" Species Distribution")
+    left, right = st.columns(2)
 
-    species_count = df["species_name"].value_counts().reset_index()
-    species_count.columns = ["Species", "Count"]
+    with left:
 
-    fig = px.pie(
-        species_count,
-        names="Species",
-        values="Count",
-        hole=0.5
-    )
+        species_count = df["species_name"].value_counts().reset_index()
 
-    st.plotly_chart(fig, use_container_width=True)
+        species_count.columns = ["Species", "Count"]
+
+        fig = px.pie(
+            species_count,
+            names="Species",
+            values="Count",
+            hole=0.55
+        )
+
+        fig.update_layout(
+            paper_bgcolor='#1A1D29',
+            plot_bgcolor='#1A1D29',
+            font=dict(
+                family="Inter",
+                size=14,
+                color="white"
+            )
+        )
+
+        st.plotly_chart(fig, use_container_width=True)
+
+    with right:
+
+        fig_box = px.box(
+            df,
+            y=feature_columns
+        )
+
+        fig_box.update_layout(
+            paper_bgcolor='#1A1D29',
+            plot_bgcolor='#1A1D29',
+            font=dict(
+                family="Inter",
+                size=14,
+                color="white"
+            )
+        )
+
+        st.plotly_chart(fig_box, use_container_width=True)
 
 # ------------------------------------------------
-# PREDICTION PAGE
+# PREDICTION
 # ------------------------------------------------
+
 elif selected == "Prediction":
 
-    st.subheader(" Predict Flower Species")
+    st.subheader("Prediction")
 
     col1, col2 = st.columns(2)
 
@@ -171,15 +435,15 @@ elif selected == "Prediction":
 
         sepal_length = st.slider(
             "Sepal Length",
-            float(df["sepal length (cm)"].min()),
-            float(df["sepal length (cm)"].max()),
+            4.0,
+            8.0,
             5.4
         )
 
         sepal_width = st.slider(
             "Sepal Width",
-            float(df["sepal width (cm)"].min()),
-            float(df["sepal width (cm)"].max()),
+            2.0,
+            4.5,
             3.4
         )
 
@@ -187,15 +451,15 @@ elif selected == "Prediction":
 
         petal_length = st.slider(
             "Petal Length",
-            float(df["petal length (cm)"].min()),
-            float(df["petal length (cm)"].max()),
+            1.0,
+            7.0,
             1.3
         )
 
         petal_width = st.slider(
             "Petal Width",
-            float(df["petal width (cm)"].min()),
-            float(df["petal width (cm)"].max()),
+            0.1,
+            2.5,
             0.2
         )
 
@@ -209,41 +473,54 @@ elif selected == "Prediction":
     prediction = model.predict(input_data)[0]
 
     species_names = {
-        0: " Setosa",
-        1: " Versicolor",
+        0: "Setosa",
+        1: "Versicolor",
         2: "Virginica"
     }
 
-    st.success(f"Predicted Species: {species_names[prediction]}")
+    st.success(
+        f"Predicted Species: {species_names[prediction]}"
+    )
 
 # ------------------------------------------------
-# 3D PLOT PAGE
+# 3D PLOT
 # ------------------------------------------------
+
 elif selected == "3D Plot":
 
-    st.subheader(" 3D Scatter Plot")
+    st.subheader("3D Visualization")
 
     fig_3d = px.scatter_3d(
         df,
         x="sepal length (cm)",
         y="sepal width (cm)",
         z="petal length (cm)",
-        color="species_name",
-        opacity=0.7
+        color="species_name"
+    )
+
+    fig_3d.update_layout(
+        paper_bgcolor='#1A1D29',
+        plot_bgcolor='#1A1D29',
+        font=dict(
+            family="Inter",
+            size=14,
+            color="white"
+        )
     )
 
     st.plotly_chart(fig_3d, use_container_width=True)
 
 # ------------------------------------------------
-# HISTOGRAM PAGE
+# HISTOGRAMS
 # ------------------------------------------------
+
 elif selected == "Histograms":
 
-    st.subheader(" Feature Histograms")
+    st.subheader("Feature Histograms")
 
     feature = st.selectbox(
         "Select Feature",
-        iris.feature_names
+        feature_columns
     )
 
     fig = px.histogram(
@@ -253,58 +530,67 @@ elif selected == "Histograms":
         marginal="box"
     )
 
-    st.plotly_chart(fig, use_container_width=True)
-
-# ------------------------------------------------
-# SCATTER MATRIX PAGE
-# ------------------------------------------------
-elif selected == "Scatter Matrix":
-
-    st.subheader(" Scatter Matrix")
-
-    fig = px.scatter_matrix(
-        df,
-        dimensions=iris.feature_names,
-        color="species_name"
+    fig.update_layout(
+        paper_bgcolor='#1A1D29',
+        plot_bgcolor='#1A1D29',
+        font=dict(
+            family="Inter",
+            size=14,
+            color="white"
+        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ------------------------------------------------
-# FEATURE IMPORTANCE PAGE
+# FEATURE IMPORTANCE
 # ------------------------------------------------
+
 elif selected == "Feature Importance":
 
-    st.subheader(" Feature Importance")
+    st.subheader("Feature Importance")
 
     importance_df = pd.DataFrame({
-        "Feature": iris.feature_names,
+        "Feature": feature_columns,
         "Importance": model.feature_importances_
     })
 
     fig = px.bar(
         importance_df,
         x="Feature",
-        y="Importance"
+        y="Importance",
+        color="Importance",
+        color_continuous_scale="Blues"
+    )
+
+    fig.update_layout(
+        paper_bgcolor='#1A1D29',
+        plot_bgcolor='#1A1D29',
+        font=dict(
+            family="Inter",
+            size=14,
+            color="white"
+        )
     )
 
     st.plotly_chart(fig, use_container_width=True)
 
 # ------------------------------------------------
-# DATASET PAGE
+# DATASET
 # ------------------------------------------------
+
 elif selected == "Dataset":
 
-    st.subheader(" Iris Dataset")
+    st.subheader("Dataset")
 
     st.dataframe(df, use_container_width=True)
 
 # ------------------------------------------------
 # FOOTER
 # ------------------------------------------------
+
 st.divider()
 
-st.markdown(
-    "<p style='text-align:center;color:gray;'>Developed for Data Mining - Universidad de la Costa</p>",
-    unsafe_allow_html=True
+st.caption(
+    "Developed for Data Mining • Universidad de la Costa"
 )
