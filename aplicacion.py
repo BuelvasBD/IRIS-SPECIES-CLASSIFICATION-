@@ -133,7 +133,7 @@ selected = option_menu(
 # ------------------------------------------------
 if selected == "Dashboard":
 
-    st.subheader("📊 Model Metrics")
+    st.subheader(" Model Metrics")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -221,7 +221,7 @@ elif selected == "Prediction":
 # ------------------------------------------------
 elif selected == "3D Plot":
 
-    st.subheader("🌐 3D Scatter Plot")
+    st.subheader(" 3D Scatter Plot")
 
     fig_3d = px.scatter_3d(
         df,
@@ -239,7 +239,7 @@ elif selected == "3D Plot":
 # ------------------------------------------------
 elif selected == "Histograms":
 
-    st.subheader("📈 Feature Histograms")
+    st.subheader(" Feature Histograms")
 
     feature = st.selectbox(
         "Select Feature",
@@ -260,7 +260,7 @@ elif selected == "Histograms":
 # ------------------------------------------------
 elif selected == "Scatter Matrix":
 
-    st.subheader("🔍 Scatter Matrix")
+    st.subheader(" Scatter Matrix")
 
     fig = px.scatter_matrix(
         df,
@@ -295,7 +295,7 @@ elif selected == "Feature Importance":
 # ------------------------------------------------
 elif selected == "Dataset":
 
-    st.subheader("📄 Iris Dataset")
+    st.subheader(" Iris Dataset")
 
     st.dataframe(df, use_container_width=True)
 
