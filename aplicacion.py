@@ -10,11 +10,13 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import plotly.express as px
 import plotly.graph_objects as go
 
+from streamlit_option_menu import option_menu
+
 # ------------------------------------------------
 # PAGE CONFIG
 # ------------------------------------------------
 st.set_page_config(
-    page_title="Iris Species Classification",
+    page_title="Iris Classification",
     page_icon="🌸",
     layout="wide"
 )
@@ -24,12 +26,13 @@ st.set_page_config(
 # ------------------------------------------------
 st.markdown("""
 <style>
+
 .main {
     background-color: #0E1117;
 }
 
 .block-container {
-    padding-top: 2rem;
+    padding-top: 1rem;
 }
 
 div[data-testid="stMetric"] {
@@ -39,15 +42,11 @@ div[data-testid="stMetric"] {
     border-radius: 15px;
 }
 
-h1, h2, h3 {
-    color: white;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------
-# LOAD DATASET
+# LOAD DATA
 # ------------------------------------------------
 iris = load_iris()
 
@@ -64,55 +63,7 @@ df["species_name"] = df["species"].map({
 })
 
 # ------------------------------------------------
-# TITLE
-# ------------------------------------------------
-st.markdown(
-    "<h1 style='text-align:center;'>🌸 Iris Species Classification Dashboard</h1>",
-    unsafe_allow_html=True
-)
-
-st.markdown(
-    "<p style='text-align:center;color:gray;'>Machine Learning Classification using Random Forest</p>",
-    unsafe_allow_html=True
-)
-
-st.divider()
-
-# ------------------------------------------------
-# SIDEBAR
-# ------------------------------------------------
-st.sidebar.title("🌿 Flower Measurements")
-
-sepal_length = st.sidebar.slider(
-    "Sepal Length",
-    float(df["sepal length (cm)"].min()),
-    float(df["sepal length (cm)"].max()),
-    5.4
-)
-
-sepal_width = st.sidebar.slider(
-    "Sepal Width",
-    float(df["sepal width (cm)"].min()),
-    float(df["sepal width (cm)"].max()),
-    3.4
-)
-
-petal_length = st.sidebar.slider(
-    "Petal Length",
-    float(df["petal length (cm)"].min()),
-    float(df["petal length (cm)"].max()),
-    1.3
-)
-
-petal_width = st.sidebar.slider(
-    "Petal Width",
-    float(df["petal width (cm)"].min()),
-    float(df["petal width (cm)"].max()),
-    0.2
-)
-
-# ------------------------------------------------
-# MODEL TRAINING
+# MODEL
 # ------------------------------------------------
 X = df[iris.feature_names]
 y = df["species"]
@@ -131,9 +82,6 @@ model = RandomForestClassifier(
 
 model.fit(X_train, y_train)
 
-# ------------------------------------------------
-# MODEL EVALUATION
-# ------------------------------------------------
 y_pred = model.predict(X_test)
 
 accuracy = accuracy_score(y_test, y_pred)
@@ -142,151 +90,220 @@ recall = recall_score(y_test, y_pred, average="weighted")
 f1 = f1_score(y_test, y_pred, average="weighted")
 
 # ------------------------------------------------
-# KPI METRICS
+# TITLE
 # ------------------------------------------------
-st.subheader("📊 Model Performance Metrics")
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.metric("Accuracy", f"{accuracy:.2f}")
-col2.metric("Precision", f"{precision:.2f}")
-col3.metric("Recall", f"{recall:.2f}")
-col4.metric("F1 Score", f"{f1:.2f}")
-
-st.divider()
-
-# ------------------------------------------------
-# USER INPUT PREDICTION
-# ------------------------------------------------
-input_data = np.array([[
-    sepal_length,
-    sepal_width,
-    petal_length,
-    petal_width
-]])
-
-prediction = model.predict(input_data)[0]
-
-species_names = {
-    0: "🌱 Setosa",
-    1: "🌿 Versicolor",
-    2: "🌸 Virginica"
-}
-
-predicted_species = species_names[prediction]
-
-# ------------------------------------------------
-# PREDICTION DISPLAY
-# ------------------------------------------------
-st.subheader("🔮 Prediction")
-
-st.success(f"The predicted flower species is: {predicted_species}")
-
-st.divider()
-
-# ------------------------------------------------
-# 3D SCATTER PLOT
-# ------------------------------------------------
-st.subheader("🌐 3D Scatter Visualization")
-
-fig_3d = px.scatter_3d(
-    df,
-    x="sepal length (cm)",
-    y="sepal width (cm)",
-    z="petal length (cm)",
-    color="species_name",
-    opacity=0.7,
-    title="3D Distribution of Iris Species"
+st.markdown(
+    "<h1 style='text-align:center;'>🌸 Iris Species Classification</h1>",
+    unsafe_allow_html=True
 )
 
-# Add new sample
-fig_3d.add_trace(
-    go.Scatter3d(
-        x=[sepal_length],
-        y=[sepal_width],
-        z=[petal_length],
-        mode="markers",
-        marker=dict(
-            size=10,
-            symbol="diamond"
-        ),
-        name="New Sample"
+st.markdown(
+    "<p style='text-align:center;color:gray;'>Interactive Machine Learning Dashboard</p>",
+    unsafe_allow_html=True
+)
+
+# ------------------------------------------------
+# TOP NAVIGATION MENU
+# ------------------------------------------------
+selected = option_menu(
+    menu_title=None,
+    options=[
+        "Dashboard",
+        "Prediction",
+        "3D Plot",
+        "Histograms",
+        "Scatter Matrix",
+        "Feature Importance",
+        "Dataset"
+    ],
+    icons=[
+        "bar-chart",
+        "cpu",
+        "globe",
+        "graph-up",
+        "grid",
+        "star",
+        "table"
+    ],
+    orientation="horizontal"
+)
+
+# ------------------------------------------------
+# DASHBOARD PAGE
+# ------------------------------------------------
+if selected == "Dashboard":
+
+    st.subheader("📊 Model Metrics")
+
+    col1, col2, col3, col4 = st.columns(4)
+
+    col1.metric("Accuracy", f"{accuracy:.2f}")
+    col2.metric("Precision", f"{precision:.2f}")
+    col3.metric("Recall", f"{recall:.2f}")
+    col4.metric("F1 Score", f"{f1:.2f}")
+
+    st.divider()
+
+    st.subheader("🌸 Species Distribution")
+
+    species_count = df["species_name"].value_counts().reset_index()
+    species_count.columns = ["Species", "Count"]
+
+    fig = px.pie(
+        species_count,
+        names="Species",
+        values="Count",
+        hole=0.5
     )
-)
 
-st.plotly_chart(fig_3d, use_container_width=True)
-
-st.divider()
+    st.plotly_chart(fig, use_container_width=True)
 
 # ------------------------------------------------
-# HISTOGRAMS
+# PREDICTION PAGE
 # ------------------------------------------------
-st.subheader("📈 Feature Distributions")
+elif selected == "Prediction":
 
-feature = st.selectbox(
-    "Select Feature",
-    iris.feature_names
-)
+    st.subheader("🤖 Predict Flower Species")
 
-hist_fig = px.histogram(
-    df,
-    x=feature,
-    color="species_name",
-    marginal="box",
-    title=f"Distribution of {feature}"
-)
+    col1, col2 = st.columns(2)
 
-st.plotly_chart(hist_fig, use_container_width=True)
+    with col1:
 
-st.divider()
+        sepal_length = st.slider(
+            "Sepal Length",
+            float(df["sepal length (cm)"].min()),
+            float(df["sepal length (cm)"].max()),
+            5.4
+        )
+
+        sepal_width = st.slider(
+            "Sepal Width",
+            float(df["sepal width (cm)"].min()),
+            float(df["sepal width (cm)"].max()),
+            3.4
+        )
+
+    with col2:
+
+        petal_length = st.slider(
+            "Petal Length",
+            float(df["petal length (cm)"].min()),
+            float(df["petal length (cm)"].max()),
+            1.3
+        )
+
+        petal_width = st.slider(
+            "Petal Width",
+            float(df["petal width (cm)"].min()),
+            float(df["petal width (cm)"].max()),
+            0.2
+        )
+
+    input_data = np.array([[
+        sepal_length,
+        sepal_width,
+        petal_length,
+        petal_width
+    ]])
+
+    prediction = model.predict(input_data)[0]
+
+    species_names = {
+        0: "🌱 Setosa",
+        1: "🌿 Versicolor",
+        2: "🌸 Virginica"
+    }
+
+    st.success(f"Predicted Species: {species_names[prediction]}")
 
 # ------------------------------------------------
-# SCATTER MATRIX
+# 3D PLOT PAGE
 # ------------------------------------------------
-st.subheader("🔍 Scatter Matrix")
+elif selected == "3D Plot":
 
-scatter_matrix = px.scatter_matrix(
-    df,
-    dimensions=iris.feature_names,
-    color="species_name",
-    title="Scatter Matrix of Iris Features"
-)
+    st.subheader("🌐 3D Scatter Plot")
 
-st.plotly_chart(scatter_matrix, use_container_width=True)
+    fig_3d = px.scatter_3d(
+        df,
+        x="sepal length (cm)",
+        y="sepal width (cm)",
+        z="petal length (cm)",
+        color="species_name",
+        opacity=0.7
+    )
 
-st.divider()
-
-# ------------------------------------------------
-# FEATURE IMPORTANCE
-# ------------------------------------------------
-st.subheader("⭐ Feature Importance")
-
-importance_df = pd.DataFrame({
-    "Feature": iris.feature_names,
-    "Importance": model.feature_importances_
-})
-
-importance_fig = px.bar(
-    importance_df,
-    x="Feature",
-    y="Importance",
-    title="Feature Importance"
-)
-
-st.plotly_chart(importance_fig, use_container_width=True)
-
-st.divider()
+    st.plotly_chart(fig_3d, use_container_width=True)
 
 # ------------------------------------------------
-# DATASET PREVIEW
+# HISTOGRAM PAGE
 # ------------------------------------------------
-st.subheader("📄 Dataset Preview")
+elif selected == "Histograms":
 
-st.dataframe(df, use_container_width=True)
+    st.subheader("📈 Feature Histograms")
+
+    feature = st.selectbox(
+        "Select Feature",
+        iris.feature_names
+    )
+
+    fig = px.histogram(
+        df,
+        x=feature,
+        color="species_name",
+        marginal="box"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# ------------------------------------------------
+# SCATTER MATRIX PAGE
+# ------------------------------------------------
+elif selected == "Scatter Matrix":
+
+    st.subheader("🔍 Scatter Matrix")
+
+    fig = px.scatter_matrix(
+        df,
+        dimensions=iris.feature_names,
+        color="species_name"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# ------------------------------------------------
+# FEATURE IMPORTANCE PAGE
+# ------------------------------------------------
+elif selected == "Feature Importance":
+
+    st.subheader("⭐ Feature Importance")
+
+    importance_df = pd.DataFrame({
+        "Feature": iris.feature_names,
+        "Importance": model.feature_importances_
+    })
+
+    fig = px.bar(
+        importance_df,
+        x="Feature",
+        y="Importance"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# ------------------------------------------------
+# DATASET PAGE
+# ------------------------------------------------
+elif selected == "Dataset":
+
+    st.subheader("📄 Iris Dataset")
+
+    st.dataframe(df, use_container_width=True)
 
 # ------------------------------------------------
 # FOOTER
 # ------------------------------------------------
+st.divider()
+
 st.markdown(
     "<p style='text-align:center;color:gray;'>Developed for Data Mining - Universidad de la Costa</p>",
     unsafe_allow_html=True
