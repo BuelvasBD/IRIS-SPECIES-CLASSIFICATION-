@@ -13,6 +13,7 @@ from sklearn.metrics import (
 )
 
 import plotly.express as px
+
 from streamlit_option_menu import option_menu
 
 # ------------------------------------------------
@@ -32,14 +33,14 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Montserrat', sans-serif;
 }
 
 /* ------------------------------------------------ */
-/* BACKGROUND */
+/* APP BACKGROUND */
 /* ------------------------------------------------ */
 
 .stApp {
@@ -47,7 +48,7 @@ html, body, [class*="css"] {
 }
 
 /* ------------------------------------------------ */
-/* REMOVE STREAMLIT HEADER */
+/* REMOVE STREAMLIT DEFAULT HEADER */
 /* ------------------------------------------------ */
 
 [data-testid="stHeader"] {
@@ -59,12 +60,25 @@ html, body, [class*="css"] {
 }
 
 /* ------------------------------------------------ */
+/* MAIN CONTAINER */
+/* ------------------------------------------------ */
+
+.main .block-container {
+
+    max-width: 1450px;
+
+    padding-top: 2rem;
+
+    padding-bottom: 4rem;
+}
+
+/* ------------------------------------------------ */
 /* HERO SECTION */
 /* ------------------------------------------------ */
 
 .hero-section {
 
-    height: 430px;
+    height: 420px;
 
     border-radius: 35px;
 
@@ -74,13 +88,13 @@ html, body, [class*="css"] {
 
     background-position: center;
 
-    position: relative;
-
     overflow: hidden;
+
+    position: relative;
 
     margin-bottom: 40px;
 
-    box-shadow: 0px 15px 40px rgba(0,0,0,0.12);
+    box-shadow: 0px 15px 40px rgba(0,0,0,0.10);
 }
 
 .hero-overlay {
@@ -89,7 +103,7 @@ html, body, [class*="css"] {
 
     height: 100%;
 
-    background: rgba(0,0,0,0.28);
+    background: rgba(0,0,0,0.25);
 
     display: flex;
 
@@ -104,13 +118,13 @@ html, body, [class*="css"] {
 
 .hero-title {
 
-    color: white !important;
+    color: white;
 
-    font-size: 90px !important;
+    font-size: 88px;
 
-    font-family: 'Cormorant Garamond', serif !important;
+    font-family: 'Cormorant Garamond', serif;
 
-    font-weight: 700 !important;
+    font-weight: 700;
 
     margin-bottom: 10px;
 }
@@ -121,31 +135,18 @@ html, body, [class*="css"] {
 
     font-size: 22px;
 
-    letter-spacing: 5px;
+    letter-spacing: 4px;
 
     text-transform: uppercase;
 }
 
 /* ------------------------------------------------ */
-/* MAIN CONTAINER */
-/* ------------------------------------------------ */
-
-.main .block-container {
-
-    padding-top: 2rem;
-
-    padding-bottom: 4rem;
-
-    max-width: 1400px;
-}
-
-/* ------------------------------------------------ */
-/* NAVIGATION */
+/* OPTION MENU */
 /* ------------------------------------------------ */
 
 .nav-link {
 
-    border-radius: 16px !important;
+    border-radius: 14px !important;
 
     transition: 0.35s !important;
 
@@ -184,18 +185,16 @@ div[data-testid="stMetric"] {
 
     border-radius: 24px;
 
-    padding: 30px;
+    padding: 28px;
 
     box-shadow: 0px 10px 30px rgba(0,0,0,0.06);
 
     transition: 0.3s;
-
-    border: none;
 }
 
 div[data-testid="stMetric"]:hover {
 
-    transform: translateY(-6px);
+    transform: translateY(-5px);
 }
 
 div[data-testid="stMetricLabel"] {
@@ -213,7 +212,7 @@ div[data-testid="stMetricValue"] {
 }
 
 /* ------------------------------------------------ */
-/* PLOTLY */
+/* CHART CONTAINERS */
 /* ------------------------------------------------ */
 
 .js-plotly-plot {
@@ -256,38 +255,42 @@ h2, h3 {
 }
 
 /* ------------------------------------------------ */
-/* SLIDERS */
+/* PREDICTION CARD */
 /* ------------------------------------------------ */
 
-.stSlider {
+.prediction-card {
 
-    padding-top: 20px;
+    background: white;
+
+    border-radius: 28px;
+
+    padding: 55px;
+
+    margin-top: 35px;
+
+    text-align: center;
+
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.06);
 }
 
-/* ------------------------------------------------ */
-/* BUTTONS */
-/* ------------------------------------------------ */
+.prediction-title {
 
-.stButton>button {
+    color: #4B2E5E;
 
-    background-color: #B68CB8;
+    font-size: 28px;
 
-    color: white;
-
-    border-radius: 14px;
-
-    border: none;
-
-    padding: 12px 22px;
-
-    transition: 0.3s;
+    margin-bottom: 10px;
 }
 
-.stButton>button:hover {
+.prediction-result {
 
-    background-color: #9F73A3;
+    color: #B68CB8;
 
-    transform: scale(1.03);
+    font-size: 70px;
+
+    font-family: 'Cormorant Garamond', serif;
+
+    font-weight: 700;
 }
 
 /* ------------------------------------------------ */
@@ -299,15 +302,6 @@ hr {
     border-color: rgba(120,90,120,0.15);
 }
 
-/* ------------------------------------------------ */
-/* SIDEBAR */
-/* ------------------------------------------------ */
-
-section[data-testid="stSidebar"] {
-
-    background-color: #F4ECF4;
-}
-
 </style>
 """, unsafe_allow_html=True)
 
@@ -315,23 +309,26 @@ section[data-testid="stSidebar"] {
 # HERO SECTION
 # ------------------------------------------------
 
-st.markdown("""
-<div class="hero-section">
+st.markdown(
+    """
+    <div class="hero-section">
 
-    <div class="hero-overlay">
+        <div class="hero-overlay">
 
-        <h1 class="hero-title">
-            Iris Species
-        </h1>
+            <div class="hero-title">
+                Iris Species
+            </div>
 
-        <p class="hero-subtitle">
-            Floral Classification Experience
-        </p>
+            <div class="hero-subtitle">
+                Floral Classification Experience
+            </div>
+
+        </div>
 
     </div>
-
-</div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
 
 # ------------------------------------------------
 # LOAD DATASET
@@ -381,7 +378,7 @@ recall = recall_score(y_test, y_pred, average="weighted")
 f1 = f1_score(y_test, y_pred, average="weighted")
 
 # ------------------------------------------------
-# MENU
+# NAVIGATION
 # ------------------------------------------------
 
 selected = option_menu(
@@ -399,7 +396,7 @@ selected = option_menu(
     styles={
         "container": {
             "padding": "0!important",
-            "background-color": "transparent",
+            "background-color": "transparent"
         },
         "icon": {
             "display": "none"
@@ -542,33 +539,22 @@ elif selected == "Prediction":
         2: "Virginica"
     }
 
-    st.markdown(f"""
-    <div style="
-        background:white;
-        border-radius:28px;
-        padding:50px;
-        text-align:center;
-        margin-top:30px;
-        box-shadow:0px 10px 30px rgba(0,0,0,0.05);
-    ">
+    st.markdown(
+        f"""
+        <div class="prediction-card">
 
-        <h2 style="
-            color:#4B2E5E;
-            margin-bottom:10px;
-        ">
-            Predicted Species
-        </h2>
+            <div class="prediction-title">
+                Predicted Species
+            </div>
 
-        <h1 style="
-            color:#B68CB8;
-            font-size:65px;
-            font-family:'Cormorant Garamond', serif;
-        ">
-            {species_names[prediction]}
-        </h1>
+            <div class="prediction-result">
+                {species_names[prediction]}
+            </div>
 
-    </div>
-    """, unsafe_allow_html=True)
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 # ------------------------------------------------
 # 3D PLOT
