@@ -5,12 +5,7 @@ import numpy as np
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 import plotly.express as px
 import plotly.graph_objects as go
@@ -20,9 +15,8 @@ from streamlit_option_menu import option_menu
 # ------------------------------------------------
 # PAGE CONFIG
 # ------------------------------------------------
-
 st.set_page_config(
-    page_title="Iris Classification",
+    page_title="Iris Species Classification",
     page_icon="🌸",
     layout="wide"
 )
@@ -30,185 +24,88 @@ st.set_page_config(
 # ------------------------------------------------
 # CUSTOM CSS
 # ------------------------------------------------
-
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Poppins', sans-serif;
+html, body, [class*="css"]  {
+    font-family: 'Cormorant Garamond', serif;
 }
 
-/* ---------- BACKGROUND ---------- */
-
 .stApp {
-
-    background-image: url("https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1974");
-
+    background-image: url("https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1920");
     background-size: cover;
-
     background-position: center;
-
     background-attachment: fixed;
 }
 
-/* ---------- MAIN CONTAINER ---------- */
-
-.main .block-container {
-
-    background: rgba(255,255,255,0.15);
-
-    backdrop-filter: blur(18px);
-
-    border-radius: 30px;
-
+.main > div {
+    background: rgba(255,255,255,0.82);
     padding: 2rem;
-
-    margin-top: 2rem;
-
-    margin-bottom: 2rem;
-
-    border: 1px solid rgba(255,255,255,0.2);
-
-    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    border-radius: 30px;
+    backdrop-filter: blur(12px);
 }
 
-/* ---------- REMOVE STREAMLIT HEADER ---------- */
-
-[data-testid="stHeader"] {
-
-    background: transparent;
+.block-container {
+    padding-top: 1rem;
 }
 
-[data-testid="stToolbar"] {
-
-    right: 2rem;
-}
-
-/* ---------- TITLES ---------- */
-
-h1 {
-
-    color: white !important;
-
-    font-size: 70px !important;
-
-    font-weight: 700 !important;
-
-    text-align: center;
-
-    margin-bottom: 0;
-}
-
-h2, h3 {
-
-    color: #4B2E5E !important;
-}
-
-/* ---------- TEXT ---------- */
-
-p, label, div {
-
+h1, h2, h3 {
     color: #4B2E5E;
 }
 
-/* ---------- SUBTITLE ---------- */
-
-.subtitle {
-
-    text-align: center;
-
-    color: white;
-
-    font-size: 24px;
-
-    margin-bottom: 30px;
+p {
+    color: #5C5470;
 }
 
-/* ---------- METRIC CARDS ---------- */
+section[data-testid="stSidebar"] {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(15px);
+}
 
 div[data-testid="stMetric"] {
-
-    background: rgba(255,255,255,0.28);
-
-    border: 1px solid rgba(255,255,255,0.25);
-
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(255,255,255,0.4);
     padding: 20px;
-
-    border-radius: 22px;
-
-    backdrop-filter: blur(10px);
-
+    border-radius: 20px;
     transition: 0.3s;
-
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
+    box-shadow: 0px 4px 20px rgba(0,0,0,0.08);
 }
 
 div[data-testid="stMetric"]:hover {
-
-    transform: translateY(-5px);
+    transform: scale(1.03);
 }
 
-/* ---------- OPTION MENU ---------- */
-
-.nav-link {
-
-    border-radius: 12px !important;
-
-    transition: 0.3s !important;
-
-    color: #4B2E5E !important;
-
-    font-weight: 500 !important;
-
-    font-size: 16px !important;
+.stTabs [data-baseweb="tab-list"] {
+    gap: 24px;
 }
 
-.nav-link:hover {
-
-    background-color: rgba(180,140,199,0.25) !important;
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    background-color: transparent;
+    border-radius: 12px;
+    color: #4B2E5E;
+    font-size: 18px;
+    transition: 0.3s;
 }
 
-.nav-link-selected {
-
+.stTabs [aria-selected="true"] {
     background-color: #B48CC7 !important;
-
     color: white !important;
 }
 
-/* ---------- PLOTLY ---------- */
-
-.js-plotly-plot {
-
+div[data-testid="stPlotlyChart"] {
+    background: rgba(255,255,255,0.55);
+    padding: 15px;
     border-radius: 20px;
-
-    overflow: hidden;
+    backdrop-filter: blur(10px);
 }
-
-/* ---------- DATAFRAME ---------- */
 
 [data-testid="stDataFrame"] {
-
-    background: rgba(255,255,255,0.2);
-
+    background: rgba(255,255,255,0.6);
     border-radius: 20px;
-
     padding: 10px;
-}
-
-/* ---------- SLIDERS ---------- */
-
-.stSlider {
-
-    padding-top: 20px;
-}
-
-/* ---------- DIVIDER ---------- */
-
-hr {
-
-    border-color: rgba(255,255,255,0.25);
 }
 
 </style>
@@ -217,7 +114,6 @@ hr {
 # ------------------------------------------------
 # LOAD DATASET
 # ------------------------------------------------
-
 iris = load_iris()
 
 df = pd.DataFrame(
@@ -226,7 +122,6 @@ df = pd.DataFrame(
 )
 
 df["species"] = iris.target
-
 df["species_name"] = df["species"].map({
     0: "Setosa",
     1: "Versicolor",
@@ -236,7 +131,6 @@ df["species_name"] = df["species"].map({
 # ------------------------------------------------
 # MODEL
 # ------------------------------------------------
-
 X = df[iris.feature_names]
 y = df["species"]
 
@@ -264,19 +158,19 @@ f1 = f1_score(y_test, y_pred, average="weighted")
 # ------------------------------------------------
 # HEADER
 # ------------------------------------------------
-
-st.markdown("<h1>Iris Species</h1>", unsafe_allow_html=True)
-
 st.markdown("""
-<p class='subtitle'>
+<h1 style='text-align:center; font-size:60px; margin-bottom:0;'>
+Iris Species
+</h1>
+
+<h3 style='text-align:center; font-weight:300; margin-top:0;'>
 Classification Dashboard
-</p>
+</h3>
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------
 # MENU
 # ------------------------------------------------
-
 selected = option_menu(
     menu_title=None,
     options=[
@@ -292,17 +186,19 @@ selected = option_menu(
     styles={
         "container": {
             "padding": "0!important",
-            "background-color": "rgba(255,255,255,0.15)",
-            "border-radius": "18px",
-            "backdrop-filter": "blur(10px)"
+            "background-color": "transparent"
         },
         "nav-link": {
+            "font-size": "18px",
             "text-align": "center",
             "margin": "0px",
-            "--hover-color": "rgba(180,140,199,0.2)",
+            "color": "#4B2E5E",
+            "--hover-color": "#EADCF2",
         },
         "nav-link-selected": {
             "background-color": "#B48CC7",
+            "color": "white",
+            "border-radius": "12px",
         },
     }
 )
@@ -312,7 +208,6 @@ st.divider()
 # ------------------------------------------------
 # DASHBOARD
 # ------------------------------------------------
-
 if selected == "Dashboard":
 
     st.subheader("Model Performance Overview")
@@ -326,14 +221,11 @@ if selected == "Dashboard":
 
     st.divider()
 
-    left, right = st.columns(2)
-
-    # ---------- PIE CHART ----------
+    left, right = st.columns([1, 1])
 
     with left:
 
         species_count = df["species_name"].value_counts().reset_index()
-
         species_count.columns = ["Species", "Count"]
 
         fig = px.pie(
@@ -352,15 +244,12 @@ if selected == "Dashboard":
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(
-                family="Poppins",
-                size=16,
-                color="#4B2E5E"
+                family="Cormorant Garamond",
+                size=18
             )
         )
 
         st.plotly_chart(fig, use_container_width=True)
-
-    # ---------- BOXPLOT ----------
 
     with right:
 
@@ -374,9 +263,8 @@ if selected == "Dashboard":
             paper_bgcolor='rgba(0,0,0,0)',
             plot_bgcolor='rgba(0,0,0,0)',
             font=dict(
-                family="Poppins",
-                size=16,
-                color="#4B2E5E"
+                family="Cormorant Garamond",
+                size=18
             )
         )
 
@@ -385,7 +273,6 @@ if selected == "Dashboard":
 # ------------------------------------------------
 # PREDICTION
 # ------------------------------------------------
-
 elif selected == "Prediction":
 
     st.subheader("Flower Prediction")
@@ -441,22 +328,19 @@ elif selected == "Prediction":
 
     st.markdown(f"""
     <div style="
-        background: rgba(255,255,255,0.28);
+        background: rgba(180,140,199,0.25);
+        padding: 30px;
         border-radius: 25px;
-        padding: 40px;
-        text-align:center;
-        margin-top:30px;
-        backdrop-filter: blur(10px);
+        text-align: center;
+        margin-top: 30px;
+        animation: fadeIn 1s;
     ">
-        <h2 style="
-            color:#4B2E5E;
-            margin-bottom:10px;
-        ">
+        <h2 style="color:#4B2E5E;">
             Predicted Species
         </h2>
 
         <h1 style="
-            color:#B48CC7;
+            color:#8B5FBF;
             font-size:60px;
         ">
             {species_names[prediction]}
@@ -467,7 +351,6 @@ elif selected == "Prediction":
 # ------------------------------------------------
 # 3D PLOT
 # ------------------------------------------------
-
 elif selected == "3D Plot":
 
     st.subheader("3D Flower Distribution")
@@ -487,10 +370,9 @@ elif selected == "3D Plot":
 
     fig_3d.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Poppins",
-            color="#4B2E5E"
+            family="Cormorant Garamond",
+            size=16
         )
     )
 
@@ -499,7 +381,6 @@ elif selected == "3D Plot":
 # ------------------------------------------------
 # HISTOGRAMS
 # ------------------------------------------------
-
 elif selected == "Histograms":
 
     st.subheader("Feature Distributions")
@@ -523,10 +404,9 @@ elif selected == "Histograms":
 
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Poppins",
-            color="#4B2E5E"
+            family="Cormorant Garamond",
+            size=16
         )
     )
 
@@ -535,7 +415,6 @@ elif selected == "Histograms":
 # ------------------------------------------------
 # SCATTER MATRIX
 # ------------------------------------------------
-
 elif selected == "Scatter Matrix":
 
     st.subheader("Scatter Matrix")
@@ -553,10 +432,9 @@ elif selected == "Scatter Matrix":
 
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Poppins",
-            color="#4B2E5E"
+            family="Cormorant Garamond",
+            size=15
         )
     )
 
@@ -565,7 +443,6 @@ elif selected == "Scatter Matrix":
 # ------------------------------------------------
 # FEATURE IMPORTANCE
 # ------------------------------------------------
-
 elif selected == "Feature Importance":
 
     st.subheader("Feature Importance")
@@ -585,10 +462,9 @@ elif selected == "Feature Importance":
 
     fig.update_layout(
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Poppins",
-            color="#4B2E5E"
+            family="Cormorant Garamond",
+            size=16
         )
     )
 
@@ -597,7 +473,6 @@ elif selected == "Feature Importance":
 # ------------------------------------------------
 # DATASET
 # ------------------------------------------------
-
 elif selected == "Dataset":
 
     st.subheader("Iris Dataset")
@@ -607,11 +482,10 @@ elif selected == "Dataset":
 # ------------------------------------------------
 # FOOTER
 # ------------------------------------------------
-
 st.divider()
 
 st.markdown("""
-<p style='text-align:center; color:white;'>
+<p style='text-align:center; color:#5C5470;'>
 Developed for Data Mining • Universidad de la Costa
 </p>
 """, unsafe_allow_html=True)
