@@ -35,87 +35,174 @@ st.markdown("""
 
 html, body, [class*="css"] {
     font-family: 'Inter', sans-serif;
+    color: white !important;
 }
 
-/* Background */
+/* ------------------------------------------------ */
+/* BACKGROUND */
+/* ------------------------------------------------ */
 
 .stApp {
-    background-color: #F5F5F7;
+    background-color: #0F1117;
 }
 
-/* Main container */
+/* ------------------------------------------------ */
+/* MAIN CONTAINER */
+/* ------------------------------------------------ */
 
 .main .block-container {
     padding-top: 1rem;
     max-width: 1400px;
 }
 
-/* Hide streamlit header */
+/* ------------------------------------------------ */
+/* STREAMLIT HEADER */
+/* ------------------------------------------------ */
 
 [data-testid="stHeader"] {
     background: transparent;
 }
 
-/* Title */
+/* ------------------------------------------------ */
+/* TITLES */
+/* ------------------------------------------------ */
 
 .main-title {
     font-size: 42px;
     font-weight: 600;
-    color: #1F1F1F;
+    color: white;
     margin-bottom: 5px;
 }
 
 .sub-title {
-    color: #6B7280;
+    color: #B8BCC8;
     margin-bottom: 25px;
 }
 
-/* Navigation */
+/* ------------------------------------------------ */
+/* NAVIGATION */
+/* ------------------------------------------------ */
 
 .nav-link {
     border-radius: 10px !important;
     transition: 0.2s !important;
-    color: #444 !important;
+    color: #D1D5DB !important;
     font-size: 14px !important;
     font-weight: 500 !important;
 }
 
+.nav-link:hover {
+    background-color: #1E293B !important;
+}
+
 .nav-link-selected {
-    background-color: #111827 !important;
+    background-color: #6366F1 !important;
     color: white !important;
 }
 
-/* Metrics */
+/* ------------------------------------------------ */
+/* METRICS */
+/* ------------------------------------------------ */
 
 div[data-testid="stMetric"] {
-    background: white;
+
+    background: #1A1D29;
+
     border-radius: 14px;
+
     padding: 18px;
-    border: 1px solid #E5E7EB;
+
+    border: 1px solid #2A2F3D;
 }
 
-/* Charts */
+/* Metric labels */
+
+div[data-testid="stMetricLabel"] {
+    color: #B8BCC8 !important;
+}
+
+/* Metric values */
+
+div[data-testid="stMetricValue"] {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* CHARTS */
+/* ------------------------------------------------ */
 
 .js-plotly-plot {
-    background: white;
+
+    background: #1A1D29;
+
     border-radius: 14px;
+
     padding: 10px;
-    border: 1px solid #E5E7EB;
+
+    border: 1px solid #2A2F3D;
 }
 
-/* Dataframe */
+/* ------------------------------------------------ */
+/* DATAFRAME */
+/* ------------------------------------------------ */
 
 [data-testid="stDataFrame"] {
+
     border-radius: 14px;
-    border: 1px solid #E5E7EB;
+
+    border: 1px solid #2A2F3D;
+
     overflow: hidden;
 }
 
-/* Section titles */
+/* ------------------------------------------------ */
+/* SECTION TITLES */
+/* ------------------------------------------------ */
 
-h2, h3 {
-    color: #1F1F1F !important;
-    font-size: 24px !important;
+h1, h2, h3, h4, h5, h6 {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SLIDERS */
+/* ------------------------------------------------ */
+
+.stSlider label {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SELECTBOX */
+/* ------------------------------------------------ */
+
+.stSelectbox label {
+    color: white !important;
+}
+
+/* ------------------------------------------------ */
+/* SUCCESS BOX */
+/* ------------------------------------------------ */
+
+.stSuccess {
+    background-color: #1E293B !important;
+    color: white !important;
+    border: 1px solid #374151 !important;
+}
+
+/* ------------------------------------------------ */
+/* DIVIDER */
+/* ------------------------------------------------ */
+
+hr {
+    border-color: #2A2F3D;
+}
+
+/* ------------------------------------------------ */
+/* FOOTER */
+/* ------------------------------------------------ */
+
+footer {
+    color: #B8BCC8 !important;
 }
 
 </style>
