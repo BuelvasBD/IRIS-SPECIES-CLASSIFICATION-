@@ -31,178 +31,75 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
-
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    color: white !important;
-}
-
 /* ------------------------------------------------ */
-/* BACKGROUND */
-/* ------------------------------------------------ */
-
-.stApp {
-    background-color: #0F1117;
-}
-
-/* ------------------------------------------------ */
-/* MAIN CONTAINER */
-/* ------------------------------------------------ */
-
-.main .block-container {
-    padding-top: 1rem;
-    max-width: 1400px;
-}
-
-/* ------------------------------------------------ */
-/* STREAMLIT HEADER */
-/* ------------------------------------------------ */
-
-[data-testid="stHeader"] {
-    background: transparent;
-}
-
-/* ------------------------------------------------ */
-/* TITLES */
-/* ------------------------------------------------ */
-
-.main-title {
-    font-size: 42px;
-    font-weight: 600;
-    color: white;
-    margin-bottom: 5px;
-}
-
-.sub-title {
-    color: #B8BCC8;
-    margin-bottom: 25px;
-}
-
-/* ------------------------------------------------ */
-/* NAVIGATION */
-/* ------------------------------------------------ */
-
-.nav-link {
-    border-radius: 10px !important;
-    transition: 0.2s !important;
-    color: #D1D5DB !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-}
-
-.nav-link:hover {
-    background-color: #1E293B !important;
-}
-
-.nav-link-selected {
-    background-color: #6366F1 !important;
-    color: white !important;
-}
-
-/* ------------------------------------------------ */
-/* METRICS */
-/* ------------------------------------------------ */
-
-div[data-testid="stMetric"] {
-
-    background: #1A1D29;
-
-    border-radius: 14px;
-
-    padding: 18px;
-
-    border: 1px solid #2A2F3D;
-}
-
-/* Metric labels */
-
-div[data-testid="stMetricLabel"] {
-    color: #B8BCC8 !important;
-}
-
-/* Metric values */
-
-div[data-testid="stMetricValue"] {
-    color: white !important;
-}
-
-/* ------------------------------------------------ */
-/* CHARTS */
-/* ------------------------------------------------ */
-
-.js-plotly-plot {
-
-    background: #1A1D29;
-
-    border-radius: 14px;
-
-    padding: 10px;
-
-    border: 1px solid #2A2F3D;
-}
-
-/* ------------------------------------------------ */
-/* DATAFRAME */
+/* DATAFRAME DARK MODE */
 /* ------------------------------------------------ */
 
 [data-testid="stDataFrame"] {
 
-    border-radius: 14px;
+    background-color: #1A1D29 !important;
 
-    border: 1px solid #2A2F3D;
+    border: 1px solid #2A2F3D !important;
 
-    overflow: hidden;
+    border-radius: 14px !important;
+
+    overflow: hidden !important;
 }
 
-/* ------------------------------------------------ */
-/* SECTION TITLES */
-/* ------------------------------------------------ */
+/* Table container */
 
-h1, h2, h3, h4, h5, h6 {
+[data-testid="stDataFrame"] div {
+
     color: white !important;
 }
 
-/* ------------------------------------------------ */
-/* SLIDERS */
-/* ------------------------------------------------ */
+/* Header */
 
-.stSlider label {
+[data-testid="stDataFrame"] thead tr th {
+
+    background-color: #111827 !important;
+
     color: white !important;
+
+    border-color: #2A2F3D !important;
+
+    font-weight: 600 !important;
 }
 
-/* ------------------------------------------------ */
-/* SELECTBOX */
-/* ------------------------------------------------ */
+/* Body rows */
 
-.stSelectbox label {
+[data-testid="stDataFrame"] tbody tr td {
+
+    background-color: #1A1D29 !important;
+
     color: white !important;
+
+    border-color: #2A2F3D !important;
 }
 
-/* ------------------------------------------------ */
-/* SUCCESS BOX */
-/* ------------------------------------------------ */
+/* Alternate rows */
 
-.stSuccess {
-    background-color: #1E293B !important;
+[data-testid="stDataFrame"] tbody tr:nth-child(even) td {
+
+    background-color: #161925 !important;
+}
+
+/* Hover effect */
+
+[data-testid="stDataFrame"] tbody tr:hover td {
+
+    background-color: #232838 !important;
+}
+
+/* Index column */
+
+[data-testid="stDataFrame"] tbody th {
+
+    background-color: #111827 !important;
+
     color: white !important;
-    border: 1px solid #374151 !important;
-}
 
-/* ------------------------------------------------ */
-/* DIVIDER */
-/* ------------------------------------------------ */
-
-hr {
-    border-color: #2A2F3D;
-}
-
-/* ------------------------------------------------ */
-/* FOOTER */
-/* ------------------------------------------------ */
-
-footer {
-    color: #B8BCC8 !important;
+    border-color: #2A2F3D !important;
 }
 
 </style>
