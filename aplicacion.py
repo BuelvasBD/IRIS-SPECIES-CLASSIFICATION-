@@ -13,6 +13,8 @@ from sklearn.metrics import (
 )
 
 import plotly.express as px
+import plotly.graph_objects as go
+
 from streamlit_option_menu import option_menu
 
 # ------------------------------------------------
@@ -20,7 +22,8 @@ from streamlit_option_menu import option_menu
 # ------------------------------------------------
 
 st.set_page_config(
-    page_title="Iris Dashboard",
+    page_title="Iris Classification",
+    page_icon="🌸",
     layout="wide"
 )
 
@@ -31,96 +34,188 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* ------------------------------------------------ */
-/* DATAFRAME DARK MODE */
-/* ------------------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* ---------- BACKGROUND ---------- */
+
+.stApp {
+
+    background-image: url("https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1974");
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-attachment: fixed;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+
+.main .block-container {
+
+    background: rgba(255,255,255,0.15);
+
+    backdrop-filter: blur(18px);
+
+    border-radius: 30px;
+
+    padding: 2rem;
+
+    margin-top: 2rem;
+
+    margin-bottom: 2rem;
+
+    border: 1px solid rgba(255,255,255,0.2);
+
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+/* ---------- REMOVE STREAMLIT HEADER ---------- */
+
+[data-testid="stHeader"] {
+
+    background: transparent;
+}
+
+[data-testid="stToolbar"] {
+
+    right: 2rem;
+}
+
+/* ---------- TITLES ---------- */
+
+h1 {
+
+    color: white !important;
+
+    font-size: 70px !important;
+
+    font-weight: 700 !important;
+
+    text-align: center;
+
+    margin-bottom: 0;
+}
+
+h2, h3 {
+
+    color: #4B2E5E !important;
+}
+
+/* ---------- TEXT ---------- */
+
+p, label, div {
+
+    color: #4B2E5E;
+}
+
+/* ---------- SUBTITLE ---------- */
+
+.subtitle {
+
+    text-align: center;
+
+    color: white;
+
+    font-size: 24px;
+
+    margin-bottom: 30px;
+}
+
+/* ---------- METRIC CARDS ---------- */
+
+div[data-testid="stMetric"] {
+
+    background: rgba(255,255,255,0.28);
+
+    border: 1px solid rgba(255,255,255,0.25);
+
+    padding: 20px;
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(10px);
+
+    transition: 0.3s;
+
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
+}
+
+div[data-testid="stMetric"]:hover {
+
+    transform: translateY(-5px);
+}
+
+/* ---------- OPTION MENU ---------- */
+
+.nav-link {
+
+    border-radius: 12px !important;
+
+    transition: 0.3s !important;
+
+    color: #4B2E5E !important;
+
+    font-weight: 500 !important;
+
+    font-size: 16px !important;
+}
+
+.nav-link:hover {
+
+    background-color: rgba(180,140,199,0.25) !important;
+}
+
+.nav-link-selected {
+
+    background-color: #B48CC7 !important;
+
+    color: white !important;
+}
+
+/* ---------- PLOTLY ---------- */
+
+.js-plotly-plot {
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+/* ---------- DATAFRAME ---------- */
 
 [data-testid="stDataFrame"] {
 
-    background-color: #1A1D29 !important;
+    background: rgba(255,255,255,0.2);
 
-    border: 1px solid #2A2F3D !important;
+    border-radius: 20px;
 
-    border-radius: 14px !important;
-
-    overflow: hidden !important;
+    padding: 10px;
 }
 
-/* Table container */
+/* ---------- SLIDERS ---------- */
 
-[data-testid="stDataFrame"] div {
+.stSlider {
 
-    color: white !important;
+    padding-top: 20px;
 }
 
-/* Header */
+/* ---------- DIVIDER ---------- */
 
-[data-testid="stDataFrame"] thead tr th {
+hr {
 
-    background-color: #111827 !important;
-
-    color: white !important;
-
-    border-color: #2A2F3D !important;
-
-    font-weight: 600 !important;
-}
-
-/* Body rows */
-
-[data-testid="stDataFrame"] tbody tr td {
-
-    background-color: #1A1D29 !important;
-
-    color: white !important;
-
-    border-color: #2A2F3D !important;
-}
-
-/* Alternate rows */
-
-[data-testid="stDataFrame"] tbody tr:nth-child(even) td {
-
-    background-color: #161925 !important;
-}
-
-/* Hover effect */
-
-[data-testid="stDataFrame"] tbody tr:hover td {
-
-    background-color: #232838 !important;
-}
-
-/* Index column */
-
-[data-testid="stDataFrame"] tbody th {
-
-    background-color: #111827 !important;
-
-    color: white !important;
-
-    border-color: #2A2F3D !important;
+    border-color: rgba(255,255,255,0.25);
 }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ------------------------------------------------
-# HEADER
-# ------------------------------------------------
-
-st.markdown("""
-<div class="main-title">
-    Iris Species Dashboard
-</div>
-
-<div class="sub-title">
-    Machine Learning Classification using Random Forest
-</div>
-""", unsafe_allow_html=True)
-
-# ------------------------------------------------
-# LOAD DATA
+# LOAD DATASET
 # ------------------------------------------------
 
 iris = load_iris()
@@ -167,6 +262,18 @@ recall = recall_score(y_test, y_pred, average="weighted")
 f1 = f1_score(y_test, y_pred, average="weighted")
 
 # ------------------------------------------------
+# HEADER
+# ------------------------------------------------
+
+st.markdown("<h1>Iris Species</h1>", unsafe_allow_html=True)
+
+st.markdown("""
+<p class='subtitle'>
+Classification Dashboard
+</p>
+""", unsafe_allow_html=True)
+
+# ------------------------------------------------
 # MENU
 # ------------------------------------------------
 
@@ -177,6 +284,7 @@ selected = option_menu(
         "Prediction",
         "3D Plot",
         "Histograms",
+        "Scatter Matrix",
         "Feature Importance",
         "Dataset"
     ],
@@ -184,17 +292,17 @@ selected = option_menu(
     styles={
         "container": {
             "padding": "0!important",
-            "background-color": "transparent"
-        },
-        "icon": {
-            "display": "none"
+            "background-color": "rgba(255,255,255,0.15)",
+            "border-radius": "18px",
+            "backdrop-filter": "blur(10px)"
         },
         "nav-link": {
             "text-align": "center",
-            "margin": "0px 6px",
+            "margin": "0px",
+            "--hover-color": "rgba(180,140,199,0.2)",
         },
         "nav-link-selected": {
-            "background-color": "#111827",
+            "background-color": "#B48CC7",
         },
     }
 )
@@ -207,7 +315,7 @@ st.divider()
 
 if selected == "Dashboard":
 
-    st.subheader("Model Metrics")
+    st.subheader("Model Performance Overview")
 
     col1, col2, col3, col4 = st.columns(4)
 
@@ -220,6 +328,8 @@ if selected == "Dashboard":
 
     left, right = st.columns(2)
 
+    # ---------- PIE CHART ----------
+
     with left:
 
         species_count = df["species_name"].value_counts().reset_index()
@@ -230,37 +340,47 @@ if selected == "Dashboard":
             species_count,
             names="Species",
             values="Count",
-            hole=0.55
+            hole=0.55,
+            color_discrete_sequence=[
+                "#D9B8F3",
+                "#C79AD9",
+                "#F3C6D3"
+            ]
         )
 
         fig.update_layout(
-            paper_bgcolor='white',
-            plot_bgcolor='white',
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
             font=dict(
-                family="Inter",
-                size=14
+                family="Poppins",
+                size=16,
+                color="#4B2E5E"
             )
         )
 
         st.plotly_chart(fig, use_container_width=True)
 
+    # ---------- BOXPLOT ----------
+
     with right:
 
-        fig_box = px.box(
+        box_fig = px.box(
             df,
-            y=iris.feature_names
+            y=iris.feature_names,
+            color_discrete_sequence=["#C79AD9"]
         )
 
-        fig_box.update_layout(
-            paper_bgcolor='white',
-            plot_bgcolor='white',
+        box_fig.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
             font=dict(
-                family="Inter",
-                size=14
+                family="Poppins",
+                size=16,
+                color="#4B2E5E"
             )
         )
 
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(box_fig, use_container_width=True)
 
 # ------------------------------------------------
 # PREDICTION
@@ -268,7 +388,7 @@ if selected == "Dashboard":
 
 elif selected == "Prediction":
 
-    st.subheader("Prediction")
+    st.subheader("Flower Prediction")
 
     col1, col2 = st.columns(2)
 
@@ -319,9 +439,30 @@ elif selected == "Prediction":
         2: "Virginica"
     }
 
-    st.success(
-        f"Predicted Species: {species_names[prediction]}"
-    )
+    st.markdown(f"""
+    <div style="
+        background: rgba(255,255,255,0.28);
+        border-radius: 25px;
+        padding: 40px;
+        text-align:center;
+        margin-top:30px;
+        backdrop-filter: blur(10px);
+    ">
+        <h2 style="
+            color:#4B2E5E;
+            margin-bottom:10px;
+        ">
+            Predicted Species
+        </h2>
+
+        <h1 style="
+            color:#B48CC7;
+            font-size:60px;
+        ">
+            {species_names[prediction]}
+        </h1>
+    </div>
+    """, unsafe_allow_html=True)
 
 # ------------------------------------------------
 # 3D PLOT
@@ -329,22 +470,27 @@ elif selected == "Prediction":
 
 elif selected == "3D Plot":
 
-    st.subheader("3D Visualization")
+    st.subheader("3D Flower Distribution")
 
     fig_3d = px.scatter_3d(
         df,
         x="sepal length (cm)",
         y="sepal width (cm)",
         z="petal length (cm)",
-        color="species_name"
+        color="species_name",
+        color_discrete_sequence=[
+            "#D9B8F3",
+            "#C79AD9",
+            "#F3C6D3"
+        ]
     )
 
     fig_3d.update_layout(
-        paper_bgcolor='white',
-        plot_bgcolor='white',
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Inter",
-            size=14
+            family="Poppins",
+            color="#4B2E5E"
         )
     )
 
@@ -356,7 +502,7 @@ elif selected == "3D Plot":
 
 elif selected == "Histograms":
 
-    st.subheader("Feature Histograms")
+    st.subheader("Feature Distributions")
 
     feature = st.selectbox(
         "Select Feature",
@@ -367,15 +513,50 @@ elif selected == "Histograms":
         df,
         x=feature,
         color="species_name",
-        marginal="box"
+        marginal="box",
+        color_discrete_sequence=[
+            "#D9B8F3",
+            "#C79AD9",
+            "#F3C6D3"
+        ]
     )
 
     fig.update_layout(
-        paper_bgcolor='white',
-        plot_bgcolor='white',
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Inter",
-            size=14
+            family="Poppins",
+            color="#4B2E5E"
+        )
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+# ------------------------------------------------
+# SCATTER MATRIX
+# ------------------------------------------------
+
+elif selected == "Scatter Matrix":
+
+    st.subheader("Scatter Matrix")
+
+    fig = px.scatter_matrix(
+        df,
+        dimensions=iris.feature_names,
+        color="species_name",
+        color_discrete_sequence=[
+            "#D9B8F3",
+            "#C79AD9",
+            "#F3C6D3"
+        ]
+    )
+
+    fig.update_layout(
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(
+            family="Poppins",
+            color="#4B2E5E"
         )
     )
 
@@ -399,15 +580,15 @@ elif selected == "Feature Importance":
         x="Feature",
         y="Importance",
         color="Importance",
-        color_continuous_scale="Blues"
+        color_continuous_scale="Purples"
     )
 
     fig.update_layout(
-        paper_bgcolor='white',
-        plot_bgcolor='white',
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
         font=dict(
-            family="Inter",
-            size=14
+            family="Poppins",
+            color="#4B2E5E"
         )
     )
 
@@ -419,7 +600,7 @@ elif selected == "Feature Importance":
 
 elif selected == "Dataset":
 
-    st.subheader("Dataset")
+    st.subheader("Iris Dataset")
 
     st.dataframe(df, use_container_width=True)
 
@@ -429,6 +610,8 @@ elif selected == "Dataset":
 
 st.divider()
 
-st.caption(
-    "Developed for Data Mining • Universidad de la Costa"
-)
+st.markdown("""
+<p style='text-align:center; color:white;'>
+Developed for Data Mining • Universidad de la Costa
+</p>
+""", unsafe_allow_html=True)
